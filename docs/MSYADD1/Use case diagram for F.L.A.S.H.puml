@@ -2,8 +2,10 @@
 left to right direction
 skinparam packageStyle rectangle
 
+' Primary Actors
 actor "Student" as student
 actor "Senior High School Faculty" as faculty
+actor "SHS Director" as director
 
 package "F.L.A.S.H. SHS Attendance System" {
 
@@ -21,11 +23,18 @@ package "F.L.A.S.H. SHS Attendance System" {
     usecase "Manage Attendance Session" as UC_ManageSession
     usecase "Monitor Real-time Attendance" as UC_Monitor
     usecase "Manually Update/Correct Status" as UC_ManageRecords
+    usecase "View Section Breakdown & Summaries" as UC_FacultySummary
+
+    ' Director Core Use Cases
+    usecase "View Centralized Dashboard" as UC_DirectorDash
+    usecase "Analyze Attendance Trends" as UC_Analyze
+    usecase "Monitor At-Risk Students" as UC_AtRisk
 }
 
 ' Authentication Links
 student --> UC_Auth
 faculty --> UC_Auth
+director --> UC_Auth
 
 ' Student Connections
 student --> UC_Mark
@@ -38,5 +47,11 @@ UC_Mark .> UC_Geo : <<include>>
 faculty --> UC_ManageSession
 faculty --> UC_Monitor
 faculty --> UC_ManageRecords
+faculty --> UC_FacultySummary
+
+' Director Connections
+director --> UC_DirectorDash
+director --> UC_Analyze
+director --> UC_AtRisk
 
 @endl
