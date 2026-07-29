@@ -1,0 +1,28 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Student" as student
+actor "Professor" as faculty
+
+package "F.L.A.S.H. SHS Attendance System" {
+    ' Student Core Use Cases
+    usecase "Mark Attendance" as UC_Mark
+    usecase "View Attendance Records" as UC_ViewStudentRecords
+
+    ' Professor Core Use Cases
+    usecase "Manage Attendance Session" as UC_ManageSession
+    usecase "Monitor Attendance" as UC_Monitor
+    usecase "Manage Attendance Records" as UC_ManageRecords
+}
+
+' Student Connections
+student --> UC_Mark
+student --> UC_ViewStudentRecords
+
+' Professor Connections
+faculty --> UC_ManageSession
+faculty --> UC_Monitor
+faculty --> UC_ManageRecords
+
+@enduml
