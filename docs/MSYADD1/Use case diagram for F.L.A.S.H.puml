@@ -1,57 +1,66 @@
 @startuml
 left to right direction
 skinparam packageStyle rectangle
-
+ 
 ' Primary Actors
 actor "Student" as student
 actor "Senior High School Faculty" as faculty
 actor "SHS Director" as director
-
+actor "System Admin" as admin
+ 
 package "F.L.A.S.H. SHS Attendance System" {
-
+ 
     ' Authentication
     usecase "Authenticate via Microsoft Entra ID" as UC_Auth
-
+ 
     ' Student Core Use Cases
     usecase "Mark Attendance" as UC_Mark
     usecase "Scan Dynamic QR Code" as UC_ScanQR
     usecase "Scan Physical ID Barcode" as UC_ScanID
     usecase "Verify Geolocation" as UC_Geo
     usecase "View Personal Attendance History" as UC_ViewStudentRecords
-
+ 
     ' Professor Core Use Cases
     usecase "Manage Attendance Session" as UC_ManageSession
     usecase "Monitor Real-time Attendance" as UC_Monitor
     usecase "Manually Update/Correct Status" as UC_ManageRecords
     usecase "View Section Breakdown & Summaries" as UC_FacultySummary
-
+ 
     ' Director Core Use Cases
     usecase "View Centralized Dashboard" as UC_DirectorDash
     usecase "Analyze Attendance Trends" as UC_Analyze
     usecase "Monitor At-Risk Students" as UC_AtRisk
+ 
+    ' System Admin Core Use Cases
+    usecase "Manage RBAC & Domain Routing" as UC_RBAC
 }
-
+ 
 ' Authentication Links
 student --> UC_Auth
 faculty --> UC_Auth
 director --> UC_Auth
-
+ 
 ' Student Connections
 student --> UC_Mark
 student --> UC_ViewStudentRecords
 UC_Mark <|-- UC_ScanQR : <<extend>>
 UC_Mark <|-- UC_ScanID : <<extend>>
 UC_Mark .> UC_Geo : <<include>>
-
+ 
 ' Professor Connections
 faculty --> UC_ManageSession
 faculty --> UC_Monitor
 faculty --> UC_ManageRecords
 faculty --> UC_FacultySummary
-
+ 
 ' Director Connections
 director --> UC_DirectorDash
 director --> UC_Analyze
 director --> UC_AtRisk
-
-@endl
+ 
+' System Admin Connections
+admin --> UC_RBAC
+UC_RBAC .> UC_Auth : <<include>>
+ 
+@enduml
+ 
