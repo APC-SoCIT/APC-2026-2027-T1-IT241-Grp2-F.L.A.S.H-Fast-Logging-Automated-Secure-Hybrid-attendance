@@ -1,0 +1,31 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title System Context Diagram for F.L.A.S.H. (Fast Logging Automated Secure Hybrid Attendance System)
+
+' Persons (Users)
+Person(student, "SHS Student", "Scans dynamic QR codes via mobile or physical ID via webcam to log attendance.")
+Person(faculty, "SHS Faculty", "Manage session QR codes, sets expiration timers, and performs manual overrides.")
+Person(director, "SHS Director", "Monitors school-wide attendance trends, section breakdowns, and threshold alerts.")
+
+' Main System
+System(flash, "F.L.A.S.H. System", "Automates attendance logging, verifies GPS/Onsite status, manages alerts, and eliminates proxy check-ins.")
+
+' External Systems
+System_Ext(entra, "Microsoft Entra ID", "Provides institutional Single Sign-On (SSO), 2FA/MFA, and user authentication.")
+System_Ext(email, "Email Service / SMTP", "Triggers automated threshold alerts to faculty, parents, and administrators.")
+System_Ext(gps, "HTML5 Geolocation API", "Captures point-in-time coordinate snapshots to verify Onsite vs. Online status.")
+
+' Relationships - Users to System
+Rel(student, flash, "Scans QR codes, checks schedule, and views personal logs", "HTTPS / Mobile")
+Rel(faculty, flash, "Manage QR sessions, views live feeds, and overrides statuses", "HTTPS / Web")
+Rel(director, flash, "Views attendance trends, section analytics, and breach reports", "HTTPS / Web")
+
+' Relationships - System to External Systems
+Rel(flash, entra, "Authenticates users and fetches role permissions", "OAuth 2.0 / OpenID Connect")
+Rel(flash, email, "Sends threshold notifications and warning alerts", "SMTP / API Calls")
+Rel(flash, gps, "Requests student location snapshots during check-in", "Browser API / HTTPS")
+
+@enduml
