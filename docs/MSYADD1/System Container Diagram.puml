@@ -1,0 +1,41 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Container Diagram for F.L.A.S.H. System
+
+' Persons / Users
+Person(student, "SHS Student", "Scans QR codes via mobile or presents physical ID to webcam.")
+Person(faculty, "SHS Faculty", "Manages QR sessions, views real-time attendance, and performs manual overrides.")
+Person(director, "SHS Director", "Monitors school-wide attendance analytics and breach reports.")
+
+' System Boundary
+System_Boundary(flash_system, "F.L.A.S.H. System") {
+    Container(web_app, "Web Application", "HTML, CSS, JavaScript / Web Framework", "Provides the user interface for Faculty dashboards, Director analytics, and webcam barcode scanning.")
+    Container(mobile_web, "Mobile Web App", "HTML5, Progressive Web App", "Provides students with the mobile interface to scan class QR codes and submit location data.")
+    Container(backend_api, "Backend API / Application Server", "Node.js / Python / C#", "Handles business logic, dynamic QR code generation, GPS coordinate verification, anti-proxy rules, and threshold checks.")
+    ContainerDb(database, "Database", "Relational DB (PostgreSQL / MySQL / Azure SQL)", "Stores user profiles, class schedules, dynamic session tokens, attendance logs, and breach counts.")
+}
+
+' External Systems
+System_Ext(entra, "Microsoft Entra ID", "Provides Single Sign-On (SSO), 2FA/MFA, and identity management.")
+System_Ext(email, "Email Service / SMTP", "Sends automated absence and tardiness threshold warnings.")
+System_Ext(gps, "HTML5 Geolocation API", "Captures browser GPS coordinates for location verification.")
+
+' User Interactions
+Rel(student, mobile_web, "Scans QR code & submits check-in", "HTTPS / Mobile Browser")
+Rel(faculty, web_app, "Manages sessions & manages attendance", "HTTPS / Desktop Browser")
+Rel(director, web_app, "Views analytical reports", "HTTPS / Desktop Browser")
+
+' Internal Container Relationships
+Rel(web_app, backend_api, "Makes API calls to fetch/update data", "HTTPS / JSON API")
+Rel(mobile_web, backend_api, "Sends check-in payload & GPS data", "HTTPS / JSON API")
+Rel(backend_api, database, "Reads & writes attendance records", "SQL / Database Protocol")
+
+' External System Relationships
+Rel(backend_api, entra, "Verifies login credentials & user roles", "OAuth 2.0 / OpenID Connect")
+Rel(backend_api, email, "Triggers alert emails when thresholds are reached", "SMTP / REST API")
+Rel(mobile_web, gps, "Requests coordinate snapshot during check-in", "Browser API")
+
+@endl
