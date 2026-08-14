@@ -6,36 +6,36 @@ LAYOUT_WITH_LEGEND()
 title Container Diagram for F.L.A.S.H. System
 
 ' Persons / Users
-Person(student, "SHS Student", "Scans QR codes via mobile or presents physical ID to webcam.")
-Person(faculty, "SHS Faculty", "Manages QR sessions, views real-time attendance, and performs manual overrides.")
-Person(director, "SHS Director", "Monitors school-wide attendance analytics and breach reports.")
+Person(student, "SHS Student", "Scans ID/QR code, verifies geolocation, and views personal attendance.")
+Person(faculty, "SHS Faculty", "Manages class attendance, requests summaries, analyzes trends, and downloads PDF reports.")
+Person(director, "SHS Director", "Monitors school-wide attendance via centralized dashboard and downloads PDF reports.")
+Person(admin, "System Admin", "Manages RBAC & domain routing and archives term records & logs.")
 
 ' System Boundary
 System_Boundary(flash_system, "F.L.A.S.H. System") {
-    Container(web_app, "Web Application", "HTML, CSS, JavaScript / Web Framework", "Provides the user interface for Faculty dashboards, Director analytics, and webcam barcode scanning.")
-    Container(mobile_web, "Mobile Web App", "HTML5, Progressive Web App", "Provides students with the mobile interface to scan class QR codes and submit location data.")
-    Container(backend_api, "Backend API / Application Server", "Node.js / Python / C#", "Handles business logic, dynamic QR code generation, GPS coordinate verification, anti-proxy rules, and threshold checks.")
-    ContainerDb(database, "Database", "Relational DB (PostgreSQL / MySQL / Azure SQL)", "Stores user profiles, class schedules, dynamic session tokens, attendance logs, and breach counts.")
+    Container(web_app, "Web Application", "HTML, CSS, JavaScript / Web Framework", "Provides dashboards for Faculty, Director, and Admin to manage attendance, view reports, and configure system settings.")
+    Container(mobile_web, "Mobile Web App", "HTML5, Progressive Web App", "Provides students with the mobile interface to scan IDs/QR codes, verify geolocation, and view personal attendance.")
+    Container(backend_api, "Backend API / Application Server", "Node.js / Python / C#", "Handles business logic, attendance management, geolocation validation, PDF report generation, and term archiving.")
+    ContainerDb(database, "Database", "Relational DB (PostgreSQL / MySQL / Azure SQL)", "Stores user profiles, attendance records, term logs, and system audit trails.")
 }
 
 ' External Systems
-System_Ext(entra, "Microsoft Entra ID", "Provides Single Sign-On (SSO), 2FA/MFA, and identity management.")
-System_Ext(email, "Email Service / SMTP", "Sends automated absence and tardiness threshold warnings.")
-System_Ext(gps, "HTML5 Geolocation API", "Captures browser GPS coordinates for location verification.")
+System_Ext(ai_engine, "AI Engine", "Generates attendance summaries and analyzes attendance trends.")
+System_Ext(entra, "Microsoft Entra ID", "Provides authentication and handles Role-Based Access Control (RBAC) & domain routing integration.")
 
 ' User Interactions
-Rel(student, mobile_web, "Scans QR code & submits check-in", "HTTPS / Mobile Browser")
-Rel(faculty, web_app, "Manages sessions & manages attendance", "HTTPS / Desktop Browser")
-Rel(director, web_app, "Views analytical reports", "HTTPS / Desktop Browser")
+Rel(student, mobile_web, "Scans ID/QR, verifies location, views logs", "HTTPS / Mobile Browser")
+Rel(faculty, web_app, "Manages class attendance & views trends/reports", "HTTPS / Desktop Browser")
+Rel(director, web_app, "Views dashboard & downloads PDF reports", "HTTPS / Desktop Browser")
+Rel(admin, web_app, "Configures RBAC/routing & archives logs", "HTTPS / Desktop Browser")
 
 ' Internal Container Relationships
-Rel(web_app, backend_api, "Makes API calls to fetch/update data", "HTTPS / JSON API")
-Rel(mobile_web, backend_api, "Sends check-in payload & GPS data", "HTTPS / JSON API")
-Rel(backend_api, database, "Reads & writes attendance records", "SQL / Database Protocol")
+Rel(web_app, backend_api, "Makes API calls to fetch/update data & trigger reports", "HTTPS / JSON API")
+Rel(mobile_web, backend_api, "Sends attendance check-in payload & GPS coordinates", "HTTPS / JSON API")
+Rel(backend_api, database, "Reads & writes attendance records and term archives", "SQL / Database Protocol")
 
 ' External System Relationships
-Rel(backend_api, entra, "Verifies login credentials & user roles", "OAuth 2.0 / OpenID Connect")
-Rel(backend_api, email, "Triggers alert emails when thresholds are reached", "SMTP / REST API")
-Rel(mobile_web, gps, "Requests coordinate snapshot during check-in", "Browser API")
+Rel(backend_api, ai_engine, "Sends attendance data for AI summary & trend analysis", "REST API / HTTPS")
+Rel(backend_api, entra, "Verifies credentials, manages RBAC, & routes domains", "OAuth 2.0 / OpenID Connect")
 
-@endl
+@enduml
