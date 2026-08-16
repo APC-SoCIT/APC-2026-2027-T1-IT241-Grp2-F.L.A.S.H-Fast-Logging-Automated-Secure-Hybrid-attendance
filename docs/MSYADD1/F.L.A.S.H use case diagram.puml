@@ -1,0 +1,51 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "SHS Student" as student
+actor "SHS Faculty" as faculty
+actor "SHS Director" as director
+actor "System Admin" as admin
+
+rectangle "F.L.A.S.H. System" {
+    usecase "Verify Geolocation" as UC_VerifyGeo
+    usecase "Scan ID / QR Code" as UC_ScanID
+    usecase "View Personal Attendance" as UC_ViewPersonal
+    usecase "Generate Attendance Summary" as UC_GenSummary
+    usecase "Manage Class Attendance" as UC_ManageClass
+    usecase "Analyze Attendance Trends" as UC_AnalyzeTrends
+    usecase "Download PDF Report" as UC_DownloadPDF
+    usecase "View Centralized Dashboard" as UC_ViewDashboard
+    usecase "Manage RBAC & Domain Routing" as UC_ManageRBAC
+    usecase "Archive Term Records & Logs" as UC_ArchiveLogs
+}
+
+rectangle "<<system>>\nAI Engine" as AI_Engine
+rectangle "<<system>>\nMicrosoft Entra ID" as EntraID
+
+' Student Relationships
+student --> UC_ViewPersonal
+UC_VerifyGeo <.. UC_ViewPersonal : <<include>>
+UC_ScanID ..> UC_ViewPersonal : <<extend>>
+UC_ViewPersonal ..> UC_GenSummary : <<extend>>
+
+' Faculty Relationships
+faculty --> UC_ManageClass
+UC_ManageClass -- UC_GenSummary
+UC_ManageClass -- UC_DownloadPDF
+
+' Director Relationships
+director --> UC_ViewDashboard
+UC_DownloadPDF ..> UC_ViewDashboard : <<extend>>
+director -- UC_AnalyzeTrends
+
+' System Admin Relationships
+admin --> UC_ManageRBAC
+admin --> UC_ArchiveLogs
+
+' External Systems Relationships
+AI_Engine ..> UC_GenSummary : <<extend>>
+AI_Engine -- UC_AnalyzeTrends
+EntraID -- UC_ManageRBAC
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component Diagram for Backend API (F.L.A.S.H. System)
+
+' External Users & Containers
+Container(web_app, "Web Application", "HTML, CSS, JS", "Used by Faculty, Director, & Admin")
+Container(mobile_web, "Mobile Web App", "PWA", "Used by Students")
+ContainerDb(database, "Database", "Relational DB", "Stores attendance & term logs")
+
+' External Systems
+System_Ext(ai_engine, "AI Engine", "Generates summaries & trends")
+System_Ext(entra, "Microsoft Entra ID", "Handles Auth & RBAC")
+
+' Component Boundary
+Container_Boundary(backend_api, "Backend API / Application Server") {
+
+    Component(attendance_comp, "Attendance Module", "Business Logic", "Handles QR/ID scanning, geolocation verification, & attendance tracking.")
+    Component(reports_comp, "Reports & AI Module", "Business Logic", "Generates PDF reports and connects to AI Engine for summaries & trends.")
+    Component(admin_comp, "Admin & Security Module", "Business Logic", "Manages RBAC, domain routing via Entra ID, & term archiving.")
+}
+
+' Interactions - Apps to API
+Rel(mobile_web, attendance_comp, "Scans ID/QR & verifies location", "HTTPS / JSON")
+Rel(web_app, attendance_comp, "Manages class attendance", "HTTPS / JSON")
+Rel(web_app, reports_comp, "Requests AI summaries & downloads PDF reports", "HTTPS / JSON")
+Rel(web_app, admin_comp, "Configures RBAC & archives term records", "HTTPS / JSON")
+
+' Interactions - API to External & Database
+Rel(attendance_comp, database, "Saves attendance logs", "SQL")
+Rel(reports_comp, ai_engine, "Sends data for AI analysis", "REST API")
+Rel(reports_comp, database, "Fetches data for PDF generation", "SQL")
+Rel(admin_comp, entra, "Verifies SSO & RBAC roles", "OAuth 2.0")
+Rel(admin_comp, database, "Archives term records & logs", "SQL")
+
+@endl
