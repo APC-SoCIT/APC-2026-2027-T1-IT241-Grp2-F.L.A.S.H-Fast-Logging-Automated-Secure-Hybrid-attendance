@@ -1,0 +1,82 @@
+@startuml 
+hide circle
+skinparam linetype ortho
+
+entity "Users" as USERS {
+  * user_id : uuid <<PK>>
+  --
+  * entra_id : string <<UK>>
+  * email : string <<UK>>
+  * first_name : string
+  * last_name : string
+  * role : enum
+  * student_id_number : string <<UK>>
+  * created_at : timestamp
+}
+
+entity "Courses" as COURSES {
+  * course_id : uuid <<PK>>
+  --
+  * course_code : string <<UK>>
+  * course_name : string
+  * faculty_id : uuid <<FK>>
+}
+
+entity "Course_Enrollments" as COURSE_ENROLLMENTS {
+  * enrollment_id : uuid <<PK>>
+  --
+  * course_id : uuid <<FK>>
+  * student_id : uuid <<FK>>
+  * enrolled_at : timestamp
+}
+
+entity "Class_Sessions" as CLASS_SESSIONS {
+  * session_id : uuid <<PK>>
+  --
+  * course_id : uuid <<FK>>
+  * qr_code_hash : string <<UK>>
+  * expiration_timer_minutes : int
+  * expires_at : timestamp
+  * is_active : boolean
+  * created_at : timestamp
+}
+
+entity "Attendance_Logs" as ATTENDANCE_LOGS {
+  * attendance_id : uuid <<PK>>
+  --
+  * session_id : uuid <<FK>>
+  * student_id : uuid <<FK>>
+  * scanned_at : timestamp
+  * scan_method : string
+  * latitude : numeric
+  * longitude : numeric
+  * mode : enum
+  * status : enum
+}
+
+entity "Threshold_Alerts" as THRESHOLD_ALERTS {
+  * alert_id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * course_id : uuid <<FK>>
+  * total_absences : int
+  * total_tardies : int
+  * flagged_at : timestamp
+  * notification_sent : boolean
+}
+
+' Core Relationships
+USERS ||--o{ COURSES : "teaches (faculty)"
+USERS ||--o{ COURSE_ENROLLMENTS : "enrolls in (student)"
+COURSES ||--o{ COURSE_ENROLLMENTS : "has"
+
+' Attendance Tracking
+COURSES ||--o{ CLASS_SESSIONS : "hosts"
+CLASS_SESSIONS ||--o{ ATTENDANCE_LOGS : "records"
+USERS ||--o{ ATTENDANCE_LOGS : "generates"
+
+' Threshold Alerts
+COURSES ||--o{ THRESHOLD_ALERTS : "monitors"
+USERS ||--o{ THRESHOLD_ALERTS : "triggers"
+
+@enduml
