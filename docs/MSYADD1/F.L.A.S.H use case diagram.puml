@@ -1,0 +1,28 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "SHS Student" as student
+actor "SHS Faculty" as faculty
+
+rectangle "F.L.A.S.H. System" {
+    usecase "Verify Geolocation" as UC_VerifyGeo
+    usecase "Scan ID / QR Code" as UC_ScanID
+    usecase "View Personal Attendance" as UC_ViewPersonal
+    usecase "Generate Attendance Summary" as UC_GenSummary
+    usecase "Manage Class Attendance" as UC_ManageClass
+    usecase "Download PDF Report" as UC_DownloadPDF
+}
+
+' Student Relationships
+student --> UC_ViewPersonal
+UC_VerifyGeo <.. UC_ViewPersonal : <<include>>
+UC_ScanID ..> UC_ViewPersonal : <<extend>>
+UC_ViewPersonal ..> UC_GenSummary : <<extend>>
+
+' Faculty Relationships
+faculty --> UC_ManageClass
+UC_ManageClass -- UC_GenSummary
+UC_ManageClass -- UC_DownloadPDF
+
+@enduml
