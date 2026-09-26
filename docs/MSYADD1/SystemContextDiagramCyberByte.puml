@@ -6,7 +6,7 @@ LAYOUT_WITH_LEGEND()
 title System Context Diagram for F.L.A.S.H. (Fast Logging Automated Secure Hybrid Attendance System)
 
 ' Persons (Users)
-Person(student, "SHS Student", "Scans ID/QR, verifies geolocation, and views personal attendance records.")
+Person(student, "SHS Student", "Logs into class attendance and scans ID/QR, verifies geolocation, and views personal attendance records.")
 Person(faculty, "SHS Faculty", "Manages class attendance, views class attendance, manages attendance reports, and views attendance trends.")
 Person(director, "SHS Director", "Manages attendance reports, views attendance reports, and views attendance trends.")
 Person(admin, "System Admin", "Manages RBAC & domain routing, and archives term records & logs.")
