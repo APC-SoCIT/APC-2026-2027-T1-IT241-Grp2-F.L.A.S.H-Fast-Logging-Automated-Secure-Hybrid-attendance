@@ -5,37 +5,52 @@ LAYOUT_WITH_LEGEND()
 
 title Container Diagram for F.L.A.S.H. System
 
-' Persons / Users
-Person(student, "SHS Student", "Scans ID/QR code, verifies geolocation, and views personal attendance.")
-Person(faculty, "SHS Faculty", "Manages class attendance, requests summaries, analyzes trends, and downloads PDF reports.")
-Person(director, "SHS Director", "Monitors school-wide attendance via centralized dashboard and downloads PDF reports.")
-Person(admin, "System Admin", "Manages RBAC & domain routing and archives term records & logs.")
+' Actors & External Systems
+Person(student, "SHS Student", "Logs and checks class attendance records.")
+Person(faculty, "SHS Faculty", "Manages class attendance records and views attendance reports.")
+Person(director, "SHS Director", "Monitors class attendance, views attendance reports, and tracks attendance trends.")
+Person(admin, "System Admin", "Configures RBAC, manages domain routing, and archives term records.")
 
-' System Boundary
+System_Ext(entra_id, "Microsoft Entra ID", "External IAM service for managing RBAC and domain routing authorization.")
+System_Ext(ai_engine, "AI Engine", "External service providing attendance summaries and trend analysis.")
+
+' F.L.A.S.H. System Boundary
 System_Boundary(flash_system, "F.L.A.S.H. System") {
-    Container(web_app, "Web Application", "HTML, CSS, JavaScript / Web Framework", "Provides dashboards for Faculty, Director, and Admin to manage attendance, view reports, and configure system settings.")
-    Container(mobile_web, "Mobile Web App", "HTML5, Progressive Web App", "Provides students with the mobile interface to scan IDs/QR codes, verify geolocation, and view personal attendance.")
-    Container(backend_api, "Backend API / Application Server", "Node.js / Python / C#", "Handles business logic, attendance management, geolocation validation, PDF report generation, and term archiving.")
-    ContainerDb(database, "Database", "Relational DB (PostgreSQL / MySQL / Azure SQL)", "Stores user profiles, attendance records, term logs, and system audit trails.")
+
+    Container(web_portal, "Web Portal", "React / Node.js", "Provides UI for faculty class management, director dashboard/reports, and admin console.")
+    Container(mobile_app, "Student Mobile App", "Kotlin / Swift", "Provides UI for student attendance logging and viewing personal attendance records.")
+    
+    Container(api_gateway, "API Gateway", "Nginx / Kong", "Routes client requests, handles domain routing, and validates identity tokens.")
+    
+    Container(attendance_service, "Attendance Core Service", "Python / Node.js", "Handles active class attendance management and attendance viewing.")
+    Container(reporting_service, "Reporting & Analytics Service", "Python / Go", "Processes report generation, attendance trend analysis, and term archival jobs.")
+    
+    ContainerDb(unified_db, "Centralized Database System", "PostgreSQL / MySQL", "Stores active operational data (users, attendance logs, classes) and archived historical term records.")
 }
 
-' External Systems
-System_Ext(ai_engine, "AI Engine", "Generates attendance summaries and analyzes attendance trends.")
-System_Ext(entra, "Microsoft Entra ID", "Provides authentication and handles Role-Based Access Control (RBAC) & domain routing integration.")
+' Admin Authentication Flow
+Rel_L(admin, entra_id, "Manages RBAC & Domain Routing", "HTTPS")
+Rel_L(web_portal, entra_id, "Delegates RBAC & Domain Routing check", "OAuth2 / OIDC")
 
-' User Interactions
-Rel(student, mobile_web, "Scans ID/QR, verifies location, views logs", "HTTPS / Mobile Browser")
-Rel(faculty, web_app, "Manages class attendance & views trends/reports", "HTTPS / Desktop Browser")
-Rel(director, web_app, "Views dashboard & downloads PDF reports", "HTTPS / Desktop Browser")
-Rel(admin, web_app, "Configures RBAC/routing & archives logs", "HTTPS / Desktop Browser")
+' User Interactions -> Frontends
+Rel_D(student, mobile_app, "Logs & views class attendance via", "HTTPS")
+Rel_D(faculty, web_portal, "Manages class attendance & views reports via", "HTTPS")
+Rel_D(director, web_portal, "Views class attendance, reports & trends via", "HTTPS")
+Rel_D(admin, web_portal, "Configures RBAC & archives records via", "HTTPS")
 
-' Internal Container Relationships
-Rel(web_app, backend_api, "Makes API calls to fetch/update data & trigger reports", "HTTPS / JSON API")
-Rel(mobile_web, backend_api, "Sends attendance check-in payload & GPS coordinates", "HTTPS / JSON API")
-Rel(backend_api, database, "Reads & writes attendance records and term archives", "SQL / Database Protocol")
+' Frontends -> API Gateway
+Rel_D(web_portal, api_gateway, "Sends API requests", "JSON / HTTPS")
+Rel_D(mobile_app, api_gateway, "Sends attendance payloads", "JSON / HTTPS")
 
-' External System Relationships
-Rel(backend_api, ai_engine, "Sends attendance data for AI summary & trend analysis", "REST API / HTTPS")
-Rel(backend_api, entra, "Verifies credentials, manages RBAC, & routes domains", "OAuth 2.0 / OpenID Connect")
+' API Gateway -> Internal Microservices
+Rel_D(api_gateway, attendance_service, "Routes attendance management & view requests", "gRPC / HTTPS")
+Rel_D(api_gateway, reporting_service, "Routes report management & trend requests", "gRPC / HTTPS")
 
-@enduml
+' Reporting Service -> External AI Engine
+Rel_R(reporting_service, ai_engine, "Sends trend data for summary generation", "JSON / HTTPS")
+
+' Core Services -> Centralized Database
+Rel_D(attendance_service, unified_db, "Reads/Writes active attendance records", "SQL")
+Rel_D(reporting_service, unified_db, "Reads data for reports, trends & executes archive operations", "SQL")
+
+@endluml
