@@ -6,26 +6,26 @@ LAYOUT_WITH_LEGEND()
 title System Context Diagram for F.L.A.S.H. (Fast Logging Automated Secure Hybrid Attendance System)
 
 ' Persons (Users)
-Person(student, "SHS Student", "Views personal attendance, verifies geolocation, and scans ID or QR code.")
-Person(faculty, "SHS Faculty", "Manages class attendance, requests summaries, analyzes trends, and downloads PDF reports.")
-Person(director, "SHS Director", "Monitors school-wide attendance via centralized dashboard and views downloaded PDF reports.")
-Person(admin, "System Admin", "Manages RBAC & domain routing and archives term records & logs.")
+Person(student, "SHS Student", "Scans ID/QR, verifies geolocation, and views personal attendance records.")
+Person(faculty, "SHS Faculty", "Manages class attendance, views class attendance, manages attendance reports, and views attendance trends.")
+Person(director, "SHS Director", "Manages attendance reports, views attendance reports, and views attendance trends.")
+Person(admin, "System Admin", "Manages RBAC & domain routing, and archives term records & logs.")
 
 ' Main System
-System(flash, "F.L.A.S.H. System", "Automates attendance logging, geolocation verification, summary generation, analytics, and record archiving.")
+System(flash, "F.L.A.S.H. System", "Automates class attendance management, report handling, summary generation, trend analytics, and term record archiving.")
 
 ' External Systems
-System_Ext(ai_engine, "AI Engine", "Generates attendance summaries and analyzes attendance trends.")
-System_Ext(entra, "Microsoft Entra ID", "Provides authentication and handles Role-Based Access Control (RBAC) & domain routing integration.")
+System_Ext(ai_engine, "AI Engine", "Processes attendance data to manage attendance trends.")
+System_Ext(entra, "Microsoft Entra ID", "Handles authentication for RBAC & domain routing.")
 
 ' Relationships - Users to System
-Rel(student, flash, "Scans ID/QR, verifies geolocation, and views personal attendance", "HTTPS / Mobile / Web")
-Rel(faculty, flash, "Manages class attendance and triggers reports/summaries/analytics", "HTTPS / Web")
-Rel(director, flash, "Views centralized dashboard and downloads PDF reports", "HTTPS / Web")
-Rel(admin, flash, "Configures RBAC/routing and manages term archives & logs", "HTTPS / Web")
+Rel(student, flash, "Interacts with Manage Class Attendance", "HTTPS / Mobile / Web")
+Rel(faculty, flash, "Manages class attendance, manages & views reports, views trends", "HTTPS / Web")
+Rel(director, flash, "Manages & views attendance reports, views attendance trends", "HTTPS / Web")
+Rel(admin, flash, "Configures RBAC & domain routing, manages term archives & logs", "HTTPS / Web")
 
 ' Relationships - System to External Systems
-Rel(flash, ai_engine, "Requests AI-generated summaries and trend analytics", "REST API / HTTPS")
-Rel(flash, entra, "Authenticates users, manages RBAC, and enforces domain routing", "OAuth 2.0 / OpenID Connect")
+Rel(flash, ai_engine, "Sends attendance data for trend analysis", "REST API / HTTPS")
+Rel(flash, entra, "Authenticates and routes domain access", "OAuth 2.0 / OpenID Connect")
 
 @enduml
