@@ -1,0 +1,93 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam DefaultFontName Arial
+skinparam DefaultFontSize 12
+skinparam ArrowColor #07325F
+skinparam ArrowFontColor #333333
+skinparam ArrowFontSize 10
+
+skinparam class {
+    BackgroundColor #08427B
+    HeaderBackgroundColor #07325F
+    BorderColor #05284C
+    FontColor #FFFFFF
+    AttributeFontColor #FFFFFF
+    AttributeFontSize 11
+}
+
+skinparam class<<external>> {
+    BackgroundColor #888888
+    HeaderBackgroundColor #666666
+    BorderColor #444444
+    FontColor #FFFFFF
+    AttributeFontColor #FFFFFF
+    AttributeFontSize 11
+}
+
+' FLASH-1 & FLASH-2: Authentication, Entra ID SSO & RBAC
+class EntraAuthService <<external>> {
+    +azureTenantId : String
+    +authenticateEntraSSO() : Boolean
+    +enforceInstitutionalMFA() : Boolean
+    +parseUserEmailDomain(email : String) : String
+}
+
+' FLASH-2: Session Management & Auto-Logout
+class IdleTimeoutScript <<external>> {
+    +IDLE_TIMEOUT_MS : int = 60000
+    -idleTimer : Timeout
+    +initIdleTimeout() : void
+    +handleUserActivity() : void
+    +resetTimer() : void
+    +logout() : void
+}
+
+' FLASH-2: Role Routing Controller (Handles Student, Professor, and Director)
+class PortalRouter {
+    +sessionRole : String
+    +sessionUser : String
+    +detectUserRole(domain : String) : String
+    +routeToPortal(role : String) : void
+    +restrictUnauthorizedAccess() : void
+}
+
+' FLASH-3: SHS Student Profile Dashboard
+class StudentDashboardUI {
+    +studentId : String
+    +studentName : String
+    +enrolledSubjects : Array
+    +attendanceHistory : Array
+    +loadProfileDetails() : void
+    +renderEnrolledClasses() : void
+    +renderAttendanceLogs() : void
+    +submitExcuseLetter(file : Object) : void
+}
+
+' Sprint 1 Placeholder Landing Dashboards for Professor & Director Roles
+class ProfessorDashboardUI {
+    +professorId : String
+    +professorName : String
+    +assignedClasses : Array
+    +loadProfileDetails() : void
+}
+
+class DirectorDashboardUI {
+    +directorId : String
+    +directorName : String
+    +assignedDepartment : String
+    +loadProfileDetails() : void
+}
+
+' Sprint 1 Relationships & Role Routing
+EntraAuthService ..> PortalRouter : Authenticates & Passes Role
+PortalRouter ..> StudentDashboardUI : Routes (Role: SHS Student)
+PortalRouter ..> ProfessorDashboardUI : Routes (Role: Faculty / Professor)
+PortalRouter ..> DirectorDashboardUI : Routes (Role: SHS Director)
+
+' Session Security (Active across all dashboards)
+IdleTimeoutScript ..> PortalRouter : Enforces Session Auto-Logout
+IdleTimeoutScript ..> StudentDashboardUI : Terminates Idle Session
+IdleTimeoutScript ..> ProfessorDashboardUI : Terminates Idle Session
+IdleTimeoutScript ..> DirectorDashboardUI : Terminates Idle Session
+
+@enduml
