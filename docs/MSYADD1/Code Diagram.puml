@@ -6,6 +6,8 @@ skinparam ArrowColor #07325F
 skinparam ArrowFontColor #333333
 skinparam ArrowFontSize 10
 
+title C4 Code Diagram (Manage RBAC and Domain Routing)
+
 skinparam class {
     BackgroundColor #08427B
     HeaderBackgroundColor #07325F
@@ -60,7 +62,6 @@ class StudentDashboardUI {
     +loadProfileDetails() : void
     +renderEnrolledClasses() : void
     +renderAttendanceLogs() : void
-    +submitExcuseLetter(file : Object) : void
 }
 
 ' Sprint 1 Placeholder Landing Dashboards for Professor & Director Roles
