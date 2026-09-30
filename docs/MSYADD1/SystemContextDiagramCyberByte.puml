@@ -6,10 +6,10 @@ LAYOUT_WITH_LEGEND()
 title System Context Diagram for F.L.A.S.H. (Fast Logging Automated Secure Hybrid Attendance System)
 
 ' Persons (Users)
-Person(student, "SHS Student", "Logs into class attendance and scans ID/QR, verifies geolocation, and views personal attendance records.")
-Person(faculty, "SHS Faculty", "Manages class attendance, views class attendance, manages attendance reports, and views attendance trends.")
-Person(director, "SHS Director", "Manages attendance reports, views attendance reports, and views attendance trends.")
-Person(admin, "System Admin", "Manages RBAC & domain routing, and archives term records & logs.")
+Person(student, "SHS Student", "Logs attendance and views class attendance records.")
+Person(faculty, "SHS Faculty", "Manages class attendance and manages attendance reports.")
+Person(director, "SHS Director", "Manages attendance reports and views attendance trends.")
+Person(admin, "System Admin", "Manages RBAC & domain routing and archives term records & logs.")
 
 ' Main System
 System(flash, "F.L.A.S.H. System", "Automates class attendance management, report handling, summary generation, trend analytics, and term record archiving.")
@@ -20,12 +20,12 @@ System_Ext(entra, "Microsoft Entra ID", "Handles authentication for RBAC & domai
 
 ' Relationships - Users to System
 Rel(student, flash, "Interacts with Manage Class Attendance", "HTTPS / Mobile / Web")
-Rel(faculty, flash, "Manages class attendance, manages & views reports, views trends", "HTTPS / Web")
-Rel(director, flash, "Manages & views attendance reports, views attendance trends", "HTTPS / Web")
-Rel(admin, flash, "Configures RBAC & domain routing, manages term archives & logs", "HTTPS / Web")
+Rel(faculty, flash, "Manages class attendance & attendance reports", "HTTPS / Web")
+Rel(director, flash, "Manages attendance reports & views attendance trends", "HTTPS / Web")
+Rel(admin, flash, "Manages RBAC & domain routing, archives term records", "HTTPS / Web")
 
 ' Relationships - System to External Systems
-Rel(flash, ai_engine, "Sends attendance data for trend analysis", "REST API / HTTPS")
-Rel(flash, entra, "Authenticates and routes domain access", "OAuth 2.0 / OpenID Connect")
+Rel(flash, ai_engine, "Integrates with Manage Attendance Trends", "REST API / HTTPS")
+Rel(flash, entra, "Integrates with Manage RBAC & Domain Routing", "OAuth 2.0 / OpenID Connect")
 
 @enduml
